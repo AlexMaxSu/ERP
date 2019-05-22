@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context" xsi:schemaLocation="
+        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.erp4j.ssm.controller"/>
+
+    <mvc:annotation-driven conversion-service="conversionServiceFactoryBean"/>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--处理静态资源 地址映射-->
+    <mvc:resources mapping="/css/**" location="/WEB-INF/css/"/>
+    <mvc:resources mapping="/js/**" location="/WEB-INF/js/"/>
+    <mvc:resources mapping="/image/**" location="/WEB-INF/image/"/>
+    <mvc:resources mapping="/pic/*" location="/pic/"/>
+    <mvc:resources mapping="/file/*" location="/file/"/>
+
+    <!--convertor-->
+    <bean id="conversionServiceFactoryBean" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters" ref="dateConverter"/>
+    </bean>
+    <!--字符串转成日期类型-->
+    <bean id="dateConverter" class="com.erp4j.ssm.controller.converter.DateConverter"/>
+
+    <!--文件上传组件-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize">
+            <value>112885760</value>
+        </property>
+    </bean>
+
+    <!--interceptor-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/"/>
+            <mvc:exclude-mapping path="/ajaxLogin"/>
+            <mvc:exclude-mapping path="/**/*.*/**"/>
+            <mvc:exclude-mapping path="/login"/>
+            <bean class="com.erp4j.ssm.interceptor.DiyHandlerInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>
